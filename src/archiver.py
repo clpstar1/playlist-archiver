@@ -5,6 +5,7 @@ import json
 from requests.exceptions import HTTPError
 import time
 import os.path
+import sys
 
 KEYS = ['title', 'position', 'videoId']
 
@@ -88,10 +89,13 @@ if __name__ == '__main__':
     
     out_dir = args.o or "."
 
+    failed = False
+
     # do for every list id found
     for list_id in args.list_id:
         retries = 5
         errors = []
+        
         filename = str(list_id  + "_" + str(int(time.time()))) + ".json"
         out_path = os.path.join(out_dir, filename)
 
@@ -108,10 +112,16 @@ if __name__ == '__main__':
                     json.dump(res, f, indent=4)
                     retries = 0
                 except Exception as e:
+                    failed = True
                     retries-=1
                     errors.append(e)
             for e in errors:
                 print(str(e))
+    
+    if (failed):
+        sys.exit(1)
+    sys.exit(0)
+        
 
 
         
